@@ -1,0 +1,13 @@
+.btn {
+    background-color: rgb(48, 141, 48);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 16px;
+  }
+  
+  .btn:disabled {
+    background-color: lightgray;
+    color: darkgray;
+  }

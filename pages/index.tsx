@@ -3,6 +3,9 @@ import styles from '../styles/Home.module.css'
 import useAppStore from '../global_store/useAppStore'
 import { convertDataToRecipe, Recipe } from '../models/recipe_model'
 import { useRouter } from 'next/router'
+import CustomButton from '../ui_library/custom_button/custom_button'
+import Card from '../ui_library/card/card'
+import AppBar from '../ui_library/appbar/appbar'
 
 export async function getServerSideProps() {
   const res = await fetch(`https://code-challenge-mid.vercel.app/api/recipes`)
@@ -27,28 +30,45 @@ export default function Home({recipes}: IHomeProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
       <main className={styles.main}>
+        <AppBar 
+          title='Marley Spoon' 
+          actions={
+            <CustomButton 
+              label={`Cart: ${selectedRecipes.length}`}  
+              disabled={selectedRecipes.length < 2}
+              handleOnClick={() => router.push('/user_details')} 
+            />
+          }
+        />
+
+        <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 m-4' >
         {
             recipes.map((item: Recipe) => {
                 return(
-                  <div style={{marginBottom: 16}} className={styles.card} key={item.id}>
-                    <input 
-                      className='mr-4' type='checkbox' 
-                      checked={selectedRecipes.find((r) => r.id === item.id) !== undefined} 
-                      onChange={() => onSelectRecipe(item)}  
-                    />
-                    <span className='text-lg font-semibold'>{item.title}</span>
-                  </div>
+                  <Card 
+                    style={{display:"flex", flexDirection:"column", justifyContent: "space-between"}} 
+                    key={item.id}
+                    title={item.title}
+                    subtitle={item.subtitle}
+                    img={item.img}
+                    action={
+                      <div className='flex items-center self-end mt-4'>
+                        <label className='text-sm font-semibold mr-1' htmlFor={item.id}>Add To Cart</label>
+                        <input  
+                          id={item.id}
+                          type='checkbox' 
+                          checked={selectedRecipes.find((r) => r.id === item.id) !== undefined} 
+                          onChange={() => onSelectRecipe(item)}  
+                        />
+                      </div>
+                    }
+                  />
                 )
             })
         }
-        <button 
-          className={styles.checkoutBtn}
-          onClick={() => router.push('/user_details')} 
-          disabled={ selectedRecipes.length < 2 }
-        >
-          Checkout
-        </button>
+        </div>
       </main>
     </>
   )

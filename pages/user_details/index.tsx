@@ -1,36 +1,77 @@
 import { useRouter } from "next/router"
+import { MouseEventHandler } from "react"
 import useAppStore from "../../global_store/useAppStore"
 import { Recipe } from "../../models/recipe_model"
+import styles from '../../styles/user_details.module.css'
+import AppBar from "../../ui_library/appbar/appbar"
+import Card from "../../ui_library/card/card"
+import CustomButton from "../../ui_library/custom_button/custom_button"
 
 const UserInfo = () => {
     const { selectedRecipes, firstname, email, handleUserInfoChange  } = useAppStore()
     const router = useRouter()
 
-    return(
-        <>
-            {
-                selectedRecipes.map((recipe: Recipe) => {
-                    return <p key={recipe.id} >{recipe.title}</p>
-                })
-            }
-            <form className="flex flex-col" onSubmit={(e) => { e.preventDefault(); router.push('/confirmation') }} >
-                <label htmlFor="firstname">First Name</label>
-                <input 
-                    className="w-1/4 border-gray-500 rounded-lg" 
-                    id="firstname" 
-                    type="text" 
-                    value={firstname} 
-                    onChange={(e) => handleUserInfoChange(e) } 
-                />
+    const handleOnSubmit = () => {
+        if(firstname.length === 0 || email.length === 0){
 
-                <label htmlFor="email">Email</label>
-                <input className="w-1/4 border-gray-500 rounded-lg" id="email" type='email' value={email} onChange={(e) => handleUserInfoChange(e) }/>
-                
-                <button className="btn btn-blue">
-                    Confirm
-                </button>
-            </form>
-        </>
+        }
+        else{
+            router.push('/confirmation')
+        }
+    }
+
+    return(
+        <div className="flex flex-col h-screen" >
+            <AppBar title='Checkout' />
+            <div className=" flex flex-col md:flex-row" >
+                <div className="flex flex-col flex-initial p-6 md:p-3 overflow-y-auto" >
+                    <p className="font-semibold text-xl mb-2" >Selected Items</p>
+                    {
+                        selectedRecipes.map((item: Recipe, index: number) => {
+                            return(
+                                <Card 
+                                    style={{display:"flex", flexDirection:"column", justifyContent: "space-between", marginBottom:"12px"}} 
+                                    key={item.id}
+                                    title={`${index+1}.  `+item.title}
+                                />
+                            )
+                        })
+                    }
+                </div>
+                <form 
+                    className="flex flex-col flex-1 md:items-center p-6 md:p-3" 
+                    onSubmit={(e) => e.preventDefault()} 
+                >
+                    <p className="font-semibold text-xl mb-2" >User Details</p>
+                    <input 
+                        className={styles.input}
+                        style={{marginBottom: "12px"}}
+                        id="firstname"
+                        placeholder="First Name" 
+                        type="text" 
+                        value={firstname} 
+                        onChange={(e) => handleUserInfoChange(e) } 
+                    />
+
+                    <input  
+                        className={styles.input} 
+                        style={{marginBottom: "12px"}}
+                        id="email" 
+                        type='email' 
+                        placeholder="Email"
+                        value={email} 
+                        onChange={(e) => handleUserInfoChange(e) }
+                    />
+                    
+                    <CustomButton 
+                        label='Confirm'
+                        disabled={ firstname.length === 0 || email.length === 0 }
+                        handleOnClick={handleOnSubmit} 
+                        style={{ alignSelf: 'center', }}
+                    />
+                </form>
+            </div>
+        </div>
     )
 }
 
