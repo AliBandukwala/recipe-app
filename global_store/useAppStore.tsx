@@ -8,13 +8,24 @@ interface IAppStore {
     firstname: string,
     email: string,
     handleUserInfoChange: Function,
+    resetStateToDefault: Function,
+    getResponseBody: Function,
 }
 
+interface IResponseBody {
+    firstName: string,
+    email: string,
+    recipes: string[],
+}
+
+/* Global store to keep required state and its methods */
 const useAppStore = create<IAppStore>((set, get) => ({
     selectedRecipes: [],
     onSelectRecipe: (recipe: Recipe) => {
         let selectedRecipes: Recipe[] = get().selectedRecipes
-        if(selectedRecipes.find((r) => r.id === recipe.id)){ selectedRecipes = selectedRecipes.filter((rec) => rec.id !== recipe.id) } 
+        if(selectedRecipes.find((r) => r.id === recipe.id)){ 
+            selectedRecipes = selectedRecipes.filter((rec) => rec.id !== recipe.id) 
+        } 
         else{  selectedRecipes.push(recipe)  }
         set({ selectedRecipes })  
     },
@@ -23,7 +34,13 @@ const useAppStore = create<IAppStore>((set, get) => ({
     handleUserInfoChange: (e: React.ChangeEvent<HTMLInputElement>) => {
         const {id, value} = e.target
         set({ [id]: value })
-    }
+    },
+    resetStateToDefault: () => { set({ selectedRecipes: [], firstname: '', email: '' }) },
+    getResponseBody: (): IResponseBody => ({
+        firstName: get().firstname,
+        email: get().email,
+        recipes: get().selectedRecipes.map((rec) => rec.id),
+    } as IResponseBody )
 }))
 
 export default useAppStore
